@@ -2,6 +2,7 @@ def eda_script(data_path):
     import pandas as pd
     import numpy as np
     import matplotlib.pyplot as plt
+    import seaborn as sns
     from scipy.stats import skew
     import os
     import time
@@ -143,6 +144,7 @@ def eda_script(data_path):
     for index , i in enumerate(cat_col_bar):
         ax = plt.subplot( rows+1 , 4, index+1)
         (df[i].value_counts()).plot.bar()
+        ax.set_ylabel(i)
         ax.set_ylabel("count")
             #plt.show()
     
@@ -171,7 +173,78 @@ def eda_script(data_path):
         df[i].hist(bins = 15)
         ax.set_xlabel(i)
         ax.set_ylabel('frequency')
-    time.sleep(2)
+    
+    
+    #bivarite plots :
+    # i will draw 16 random plots
+    if len(numerical_col) > 4:
+        plt.figure(figsize=(30,15)) 
+        plt.tight_layout(pad = 15)
+        for iterate in range(1,17):
+            ax = plt.subplot( 4 , 4, iterate )
+            i = np.random.randint(len(numerical_col))
+            j = np.random.randint(len(numerical_col))
+            sns.scatterplot(data=df, x=numerical_col[i], y=numerical_col[j],ax = ax)
+            ax.set_xlabel(numerical_col[i])
+            ax.set_ylabel(numerical_col[j])  
+    else :
+        index = 1
+        plt.figure(figsize = (30,5))
+        plt.tight_layout(pad = 5)
+        rows = (np.math.factorial(len(numerical_col)-1))//4
+        for i in range(len(numerical_col)-1):
+            for j in range(i+1 ,len(numerical_col)):
+                #print(i , j , (i+1)*j)
+                ax = plt.subplot( rows+1 , 4, index )
+                index+=1
+
+                sns.scatterplot(data=df, x=numerical_col[i], y=numerical_col[j],ax = ax)
+                ax.set_xlabel(numerical_col[i])
+                ax.set_ylabel(numerical_col[j])
+                
+                
+                
+    # boxplots :             
+
+    total = len(numerical_col) * len(cat_col)
+    index = 1
+    if (total > 4 ):
+        plt.figure(figsize=(40,30)) 
+        plt.tight_layout(pad = 15)
+    else : 
+        plt.figure(figsize=(30,5)) 
+        plt.tight_layout(pad = 5)
+    for i in range(len(cat_col)):
+        for j in range(len(numerical_col)):  
+            #ax = plt.subplot( (total//4)+1 , 4, (i+1)*(j+1) )
+            ax = plt.subplot( (total//4)+1 , 4, index )
+            sns.boxplot(x=cat_col[i], y=numerical_col[j],data = df)
+            ax.set_xlabel(cat_col[i])
+            ax.set_ylabel(numerical_col[j]) 
+            index+=1 
+    
+    
+    # heatmap
+    plt.figure(figsize=(12, 6))
+    # define the mask to set the values in the upper triangle to True
+    mask = np.triu(np.ones_like(df.corr(), dtype=np.bool))
+    heatmap = sns.heatmap(df.corr(), mask=mask, vmin=-1, vmax=1, annot=True, cmap='BrBG')
+    heatmap.set_title('Triangle Correlation Heatmap', fontdict={'fontsize':18}, pad=16);
+        
+    
+    # rows = (np.math.factorial(len(numerical_col)-1))//4
+    # _,axs = plt.subplots(rows+1 , 4,figsize = (16,17))
+    # axs = axs.ravel()
+    # plt.tight_layout(pad = 15)
+    # index = (rows+1) * 4
+    # for i in range(len(numerical_col)-1):
+    #     for j in range(i+1 ,len(numerical_col)):
+    #         sns.scatterplot(data=df, x=numerical_col[i], y=numerical_col[j],ax = axs[(i+1)*j])
+    
+        
+            
+    
+    return df
     #plt.show
             
         
