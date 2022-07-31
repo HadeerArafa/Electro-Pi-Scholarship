@@ -205,8 +205,12 @@ def eda_script(data_path):
                 
                 
     # boxplots :             
-
-    total = len(numerical_col) * len(cat_col)
+    cat_col_unique_less = []
+    for i in cat_col :
+        if len(df[i].unique())<=10:
+            cat_col_unique_less.append(i)
+    
+    total = len(numerical_col) * len(cat_col_unique_less)
     index = 1
     if (total > 4 ):
         plt.figure(figsize=(40,30)) 
@@ -214,12 +218,12 @@ def eda_script(data_path):
     else : 
         plt.figure(figsize=(30,5)) 
         plt.tight_layout(pad = 5)
-    for i in range(len(cat_col)):
+    for i in range(len(cat_col_unique_less)):
         for j in range(len(numerical_col)):  
             #ax = plt.subplot( (total//4)+1 , 4, (i+1)*(j+1) )
             ax = plt.subplot( (total//4)+1 , 4, index )
-            sns.boxplot(x=cat_col[i], y=numerical_col[j],data = df)
-            ax.set_xlabel(cat_col[i])
+            sns.boxplot(x=cat_col_unique_less[i], y=numerical_col[j],data = df)
+            ax.set_xlabel(cat_col_unique_less[i])
             ax.set_ylabel(numerical_col[j]) 
             index+=1 
     
